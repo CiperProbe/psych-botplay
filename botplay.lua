@@ -11,7 +11,7 @@ function onCreate()
     setProperty('botplayTxt.visible', false)
     setProperty('ratingName', 'Sick')
     setRatingPercent(1.0)
-    setProperty('accuracy', 100.0)
+    setProperty('rating', 100.0)
     setRatingFC('SFC')
     notesHitCount = 0
     lastUpdateTime = 0
@@ -46,7 +46,12 @@ function goodNoteHit(id, direction, noteType, isSustainNote)
     
     addHits(1)
     
-    updateScoreDisplay()
+    setProperty('ratingName', 'Sick')
+    setRatingPercent(1.0)
+    setProperty('rating', 100.0)
+    setRatingFC('SFC')
+    
+    updateScoreText()
     
     if not getProperty('cpuControlled') then
         setProperty('cpuControlled', true)
@@ -90,7 +95,7 @@ function onUpdate(elapsed)
     end
     
     if lastScoreUpdate >= SCORE_UPDATE_INTERVAL then
-        updateScoreDisplay()
+        updateScoreText()
         lastScoreUpdate = 0
     end
 end
@@ -110,7 +115,7 @@ function onUpdatePost(elapsed)
         setProperty('totalPlayed', notesHitCount)
         setProperty('ratingName', 'Sick')
         setRatingPercent(1.0)
-        setProperty('accuracy', 100.0)
+        setProperty('rating', 100.0)
         setRatingFC('SFC')
         
         local currentScore = getProperty('songScore')
@@ -118,7 +123,6 @@ function onUpdatePost(elapsed)
             setProperty('songScore', manualScore)
         end
         
-        updateScoreDisplay()
         updateScoreText()
         
         lastPostUpdateTime = 0
@@ -175,6 +179,20 @@ function updateScoreDisplay()
     if getProperty('score') ~= nil then
         setProperty('score.text', scoreText)
     end
+end
+
+function updateScoreText()
+    local currentScore = getProperty('songScore')
+    local rating = 100.0
+    local misses = getProperty('songMisses') or 0
     
-    updateScoreText()
+    local fullScoreText = string.format('Score: %d | Misses: %d | Rating: %.1f%%', currentScore, misses, rating)
+    
+    if getProperty('scoreTxt') ~= nil then
+        setProperty('scoreTxt.text', fullScoreText)
+    end
+    
+    if getProperty('score') ~= nil then
+        setProperty('score.text', fullScoreText)
+    end
 end
